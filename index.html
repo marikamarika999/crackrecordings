@@ -138,6 +138,20 @@ html,body{height:100%}
   .adlinks a{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;letter-spacing:.02em;padding:10px 16px;border-radius:12px;background:rgba(255,255,255,.1);transition:background .2s,color .2s,transform .25s cubic-bezier(.2,.8,.2,1)}
   .adlinks a:hover,.adlinks a:focus-visible{background:#fff;color:#000;transform:scale(1.05)}
   .adlinks svg{width:18px;height:18px;fill:currentColor;flex:none}
+  /* zdjęcie na podstronie artysty: lekkie powiększenie po najechaniu + klik = podgląd z zapisem */
+  .adphoto.zoomable{cursor:zoom-in;transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .35s}
+  .adphoto.zoomable:hover,.adphoto.zoomable:focus-visible{transform:scale(1.04);border-color:#fff;box-shadow:0 14px 40px rgba(0,0,0,.6);outline:0}
+
+  /* ===== PODGLĄD ZDJĘCIA (lightbox) ===== */
+  .lb{position:fixed;inset:0;z-index:90;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:clamp(16px,4vw,40px);background:rgba(0,0,0,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .25s}
+  .lb.on{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s}
+  .lb img{display:block;max-width:100%;max-height:calc(100svh - 150px);width:auto;height:auto;object-fit:contain;border-radius:16px;border:1px solid #3a3a3a;transform:scale(.94);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+  .lb.on img{transform:scale(1)}
+  .lb-bar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .lb-btn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;letter-spacing:.02em;padding:10px 18px;border:0;border-radius:12px;background:rgba(255,255,255,.1);color:#fff;cursor:pointer;transition:background .2s,color .2s,transform .25s cubic-bezier(.2,.8,.2,1)}
+  .lb-btn svg{width:18px;height:18px;flex:none}
+  .lb-btn:hover,.lb-btn:focus-visible{background:#fff;color:#000;transform:scale(1.05);outline:0}
+  @media(prefers-reduced-motion:reduce){.adphoto.zoomable,.lb,.lb img,.lb-btn{transition:none}}
   @media(max-width:720px){.adetail{flex-direction:column}.adphoto{flex:none;width:100%;max-width:420px}}
 
   @media(max-width:520px){.dock nav a{font-size:12px;padding:10px 4px}}
@@ -521,6 +535,8 @@ html,body{height:100%}
     { name: "Żaneta Pocisk", photo: "crackrecordings/zanetapocisk.jpg", spotify: "https://open.spotify.com/artist/7oj6ux9yBAJIAstjqbDlaT", apple: "https://music.apple.com/pl/artist/%C5%BCaneta-pocisk/1877627376?l=pl", tiktok: "https://www.tiktok.com/@zanetapocisk", instagram: "https://www.instagram.com/pociskzaneta", fandom: "https://sunopedia.fandom.com/pl/wiki/%C5%BBaneta_Pocisk", desc: "Żaneta Pocisk (ur. 14 sierpnia 2005 roku w Sosnowcu) - polska artystka AI, piosenkarka, autorka tekstów, producentka muzyczna i wizjonerka. Założycielka niezależnej wytwórni Pocisk Records. Karierę muzyczną rozpoczęła 6 lutego 2026 roku, publikując w serwisach YouTube i SoundCloud singiel 'pocisk balistyczny'. W swojej twórczości łączy pop, hyperpop, electro, dance, trap, techno, EDM."},
     { name: "Malwinka Malinka", photo: "crackrecordings/malwinkamalinka.jpg", spotify: "https://open.spotify.com/artist/0W2p7lCGqK64QDAe3PFwRI", apple: "https://music.apple.com/us/artist/malwinka-malinka/6776941406", tiktok: "", instagram: "https://www.instagram.com/malwinka_.malinka", fandom: "", desc: "Coming Soon!"},
     { name: "Oliwia Mokrawska", photo: "crackrecordings/oliwia mokrawska.jpg", spotify: "", apple: "", tiktok: "", instagram: "https://www.instagram.com/oliwia_.mokrawska", fandom: "", desc: "Coming Soon!"},
+    { name: "Monisia Szalona", photo: "szalonamonisia.jpg", spotify: "https://open.spotify.com/artist/6A1WBKCpjSWr6fjwjrNN4w", apple: "", tiktok: "https://tiktok.com/@niuniatheofficial", instagram: "https://www.instagram.com/szalonamonisia", fandom: "", desc: "Szalona Monisia, znana również jako Monika Warzynowska. Matka dwójki dzieci które porzuciła ze względu na sławę. Bardzo naiwna i oddana kobieta każdemu mężczyźnie co da jej grosz uwagi. Wychowywana na granicy z Ukrainą w patologicznym mieście, przez co nabrała wielu nawyków. Jej mottem od wielu lat było: „Zajebalam to zajebalam, trzeba było pilnować!” Kilka miesięcy temu postanowiła odejść od sławy bo znalazła se partnera, lecz zostawił ją ze złamanym sercem dlatego powraca w potrójnej mocy. Monika jest pochodzenia Polsko-włoskiego z czego niektore momenty jej mowy są wymawiane z akcentem. Teraz zamieszkuje tereny Lubelszczyzny gdzie rozwija swój własny biznes piosenkarski. Monika ma 20 lat a jej zboczenie wyniosło się z jej domu, gdzie kuzynostwo próbowało się do niej dobierać."},
+    { name: "Łysa Szprotka", photo: "lysaszprotka.jpg", spotify: "https://open.spotify.com/artist/4bXmIKl5hSKM4ja32LCJxH", apple: "https://music.apple.com/pl/artist/%C5%82ysa-szprotka/1769439093?l=pl", tiktok: "https://tiktok.com/@lysaszprotka", instagram: "https://www.instagram.com/lysaszprotka", fandom: "", desc: "Łysa Szprotka (ur. 1 luty 2004) – artystka o nietypowym stylu muzycznym używająca Text to speech jako wokale. Karierę rozpoczęła po występie w Mam Talent, gdzie zdobyła złoty przycisk, tworząc muzykę o temacie “taboo” miłosnym. W trakcie swojej kariery przeżyła przygody miłosne oraz od czasu do czasu rozczarowania, czym zaskutkowało wiekszą siłę. Przed rozpoczęciem kariery żyła z pracy w striptizie “Rosa”, gdzie aktualnie odwiedza jako tancerka dla zabawy, prowadzi podwójne życie: jako prostytutka i kobieta z klasą."},
   ];
 </script>
 
@@ -650,6 +666,39 @@ html,body{height:100%}
         .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     };
 
+    // podgląd zdjęcia z możliwością zapisania (Esc / klik w tło / Close zamyka)
+    var lb = document.createElement('div');
+    lb.className = 'lb';
+    lb.setAttribute('role', 'dialog');
+    lb.setAttribute('aria-modal', 'true');
+    lb.innerHTML = '<img alt="">' +
+      '<div class="lb-bar">' +
+      '<a class="lb-btn lb-save" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14"/></svg>Save photo</a>' +
+      '<button type="button" class="lb-btn lb-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>Close</button>' +
+      '</div>';
+    document.body.appendChild(lb);
+    var lbImg = lb.querySelector('img'), lbSave = lb.querySelector('.lb-save'), lbClose = lb.querySelector('.lb-close');
+    var lbFrom = null;
+    var closePhoto = function () {
+      if (!lb.classList.contains('on')) return;
+      lb.classList.remove('on');
+      if (lbFrom && lbFrom.focus) lbFrom.focus();
+    };
+    window.openPhoto = function (src, name, slug) {
+      var ext = (src.split('?')[0].match(/\.(jpe?g|png|webp|gif|avif)$/i) || [, 'jpg'])[1].toLowerCase();
+      lbImg.src = src;
+      lbImg.alt = name;
+      lbSave.href = src;
+      lbSave.setAttribute('download', (slug || 'artist') + '.' + ext);
+      lbFrom = document.activeElement;
+      lb.classList.add('on');
+      lbClose.focus();
+    };
+    lb.addEventListener('click', function (e) { if (e.target === lb) closePhoto(); });
+    lbClose.addEventListener('click', closePhoto);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePhoto(); });
+    window.addEventListener('hashchange', function () { lb.classList.remove('on'); });
+
     // podstrona artystki: zdjęcie po lewej, po prawej nazwa, opis i linki
     window.renderArtist = function (slug) {
       var a = null;
@@ -662,7 +711,17 @@ html,body{height:100%}
       ph.className = 'adphoto';
       ph.setAttribute('role', 'img');
       ph.setAttribute('aria-label', a.name || 'Artist');
-      if (a.photo && String(a.photo).trim()) ph.style.backgroundImage = 'url("' + encodeURI(String(a.photo).trim()) + '")';
+      if (a.photo && String(a.photo).trim()) {
+        var src = encodeURI(String(a.photo).trim());
+        ph.style.backgroundImage = 'url("' + src + '")';
+        ph.classList.add('zoomable');
+        ph.setAttribute('role', 'button');
+        ph.setAttribute('tabindex', '0');
+        ph.setAttribute('aria-label', (a.name || 'Artist') + ' — open photo');
+        var open = function () { window.openPhoto(src, a.name || 'Artist', slugOf(a)); };
+        ph.addEventListener('click', open);
+        ph.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+      }
       box.appendChild(ph);
 
       var tx = document.createElement('div');
