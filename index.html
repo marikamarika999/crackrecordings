@@ -62,7 +62,10 @@ html,body{height:100%}
   .card{flex:0 1 290px;max-width:100%;background:#0a0a0a;border:1px solid #3a3a3a;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .25s,transform .25s}
   .card:hover{border-color:#fff;transform:translateY(-3px)}
   /* zdjęcie: duże, pionowe (3:4) */
-  .photo{position:relative;aspect-ratio:3/4;background:#111 center/cover no-repeat}
+  .pwrap{display:block;overflow:hidden}
+  .photo{position:relative;aspect-ratio:3/4;background:#111 center/cover no-repeat;filter:grayscale(1);transition:transform .45s cubic-bezier(.2,.8,.2,1),filter .45s ease}
+  .card:hover .photo,.pwrap:focus-visible .photo{transform:scale(1.07);filter:grayscale(0)}   /* czarno-białe zdjęcie, lekkie powiększenie po najechaniu */
+  .info h3 a{display:block}
   .photo:not(.has)::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 14px,rgba(255,255,255,.05) 14px 15px)}
   .photo:not(.has)::after{content:"Photo";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;letter-spacing:.1em;color:#555}
   .info{padding:16px 16px 18px}
@@ -125,16 +128,58 @@ html,body{height:100%}
   .socials a{font-size:12px;letter-spacing:.28em;color:var(--dim);transition:color .2s}
   .socials a:hover{color:#fff}
 
+  /* ===== PODSTRONA ARTYSTKI ===== */
+  .adetail{display:flex;gap:clamp(24px,5vw,72px);align-items:flex-start;text-align:left}
+  .adphoto{flex:0 0 min(420px,40%);aspect-ratio:3/4;border-radius:20px;background:#111 center/cover no-repeat;border:1px solid #3a3a3a}
+  .adtext{flex:1;min-width:0}
+  .adtext h2{font-family:var(--font-head);font-weight:400;font-size:clamp(32px,5vw,56px);line-height:1.1;letter-spacing:.03em;margin-bottom:20px}
+  .adtext p{font-size:clamp(15px,1.6vw,18px);line-height:1.7;color:#d6d6d6;margin-bottom:28px;white-space:pre-line}
+  .adlinks{display:flex;flex-wrap:wrap;gap:10px}
+  .adlinks a{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;letter-spacing:.02em;padding:10px 16px;border-radius:12px;background:rgba(255,255,255,.1);transition:background .2s,color .2s,transform .25s cubic-bezier(.2,.8,.2,1)}
+  .adlinks a:hover,.adlinks a:focus-visible{background:#fff;color:#000;transform:scale(1.05)}
+  .adlinks svg{width:18px;height:18px;fill:currentColor;flex:none}
+  @media(max-width:720px){.adetail{flex-direction:column}.adphoto{flex:none;width:100%;max-width:420px}}
+
   @media(max-width:520px){.dock nav a{font-size:13px}}
-  @media(prefers-reduced-motion:reduce){.panel,.shake{animation:none}.bg,.bg::after,.dock,.dock nav a,.back,.topbar,.topnav a{transition:none}}
+
+  /* ===== WERSJA NA TELEFON: tło-wideo obrócone o 90° w lewo =====
+     Tylko prawdziwy telefon (ekran dotykowy, bez myszki) trzymany pionowo –
+     zwężone okno przeglądarki na komputerze NIE obraca tła.
+     Element wideo ma wymiary „odwrócone” (szerokość = wysokość ekranu),
+     po obrocie o -90° dokładnie wypełnia cały ekran. Żeby wyłączyć: usuń ten blok. */
+  @media(max-width:720px) and (orientation:portrait) and (hover:none) and (pointer:coarse){
+    .bg video{
+      inset:auto;top:50%;left:50%;
+      width:100vh;height:100vw;               /* zapas dla starszych przeglądarek */
+      width:100dvh;height:100dvw;
+      transform:translate(-50%,-50%) rotate(-90deg);
+      transform-origin:center center;
+      object-fit:cover;
+    }
+    /* YouTube / Vimeo (iframe) – to samo, z zachowaniem proporcji 16:9 */
+    .bg iframe{
+      width:max(100vh,177.78vw);height:max(56.25vh,100vw);
+      min-width:0;min-height:0;
+      transform:translate(-50%,-50%) rotate(-90deg);
+    }
+  }
+  @media(prefers-reduced-motion:reduce){.panel,.shake,.bg{animation:none!important}.bg,.bg::after,.dock,.dock nav a,.back,.topbar,.topnav a{transition:none}}
 
   /* ===== PODSTRONY: pełne czarne strony zamiast okienek ===== */
   body.sub .bg{display:none}
   body.sub main{padding:0;align-items:stretch;justify-content:stretch}
   body.sub .panel{width:100%;max-width:none;height:100%;max-height:none;border:0;border-radius:0;background:#000;
     padding:clamp(150px,16vw,170px) clamp(16px,5vw,64px) clamp(32px,6vw,64px);
-    animation:pagein .35s ease backwards;scrollbar-color:#444 #000}
-  @keyframes pagein{from{opacity:0}to{opacity:1}}
+    animation:pagein .5s cubic-bezier(.2,.8,.2,1) backwards;scrollbar-color:#444 #000}
+  @keyframes pagein{from{opacity:0;filter:blur(18px)}to{opacity:1;filter:blur(0)}}
+
+  /* ===== PRZEJŚCIA MIĘDZY STRONAMI: stara strona się rozmywa, nowa wyostrza ===== */
+  @keyframes blurOut{to{opacity:0;filter:blur(18px)}}
+  @keyframes bgOut{to{opacity:0;filter:blur(22px);transform:scale(1.08)}}
+  @keyframes bgIn{from{opacity:0;filter:blur(22px);transform:scale(1.08)}to{opacity:1;filter:blur(0);transform:scale(1)}}
+  .bg{animation:bgIn .6s ease backwards}
+  .leaving{animation:blurOut .26s ease forwards!important;pointer-events:none}
+  .bg.leaving{animation-name:bgOut!important}
   body.sub .panel h1{line-height:1.3;padding-top:4px}
   body.sub .panel{display:flex;flex-direction:column}
   body.sub .panel > *{width:100%;max-width:1200px;margin-left:auto;margin-right:auto;flex:none}
@@ -182,6 +227,15 @@ html,body{height:100%}
     <section class="panel" data-page="artist" hidden>
       <h1>Artist</h1>
       <div class="artists" id="artists"></div>
+      <div class="pfoot">© <span class="yr2">2026</span> <a href="#/" aria-label="CRACK Recordings — home">CRACK Recordings</a><span class="division">, a division of <a href="https://sliska.pl/smg/" target="_blank" rel="noopener">Śliska Music Group</a>.</span></div>
+    </section>
+
+    <!-- ARTYSTKA (podstrona szczegółowa, wypełniana skryptem) -->
+    <section class="panel" data-page="artist-detail" hidden>
+      <div class="adwrap">
+        <a class="back" href="#/artist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>Artist</a>
+        <div class="adetail" id="adetail"></div>
+      </div>
       <div class="pfoot">© <span class="yr2">2026</span> <a href="#/" aria-label="CRACK Recordings — home">CRACK Recordings</a><span class="division">, a division of <a href="https://sliska.pl/smg/" target="_blank" rel="noopener">Śliska Music Group</a>.</span></div>
     </section>
 
@@ -285,6 +339,7 @@ html,body{height:100%}
   //   name       nazwa artystki
   //   photo      zdjęcie, najlepiej pionowe 3:4 (np. 900x1200), np. "artists/anna.jpg"
   //              (folder "artists" połóż obok index.html)
+  //   desc       opis artystki (pokazuje się na jej podstronie), np. "Pochodzi z ..."
   //   spotify, apple (Apple Music), tiktok, instagram, fandom, x
   //              wklej CAŁY link między cudzysłowy, np. "https://open.spotify.com/artist/..."
   //              puste "" = kafelek jest przyciemniony i nie da się go kliknąć
@@ -293,19 +348,19 @@ html,body{height:100%}
   //  Pilnuj przecinka na końcu każdej linijki i prostych cudzysłowów " ".
   // =====================================================================
   var ARTISTS = [
-    { name: "GAENOVEFA", photo: "crackrecordings/Geniaoct.jpg", spotify: "https://open.spotify.com/artist/6dNngdYDRKzFH8rfZXG2bh", apple: "https://music.apple.com/pl/artist/gaenovefa/1806346053?l=pl", tiktok: "https://www.tiktok.com/@gaenovefa", instagram: "https://www.instagram.com/americasnextsupermodel/", fandom: "https://sunopedia.fandom.com/pl/wiki/GAENOVEFA"},
-    { name: "Marika Dupodajka", photo: "crackrecordings/export_BAD95D0D-8600-4799-A384-423EF9CFCABC.jpg", spotify: "https://open.spotify.com/artist/0y3Hz2TBbj4CSW7PsZB0xh", apple: "https://music.apple.com/pl/artist/marika-dupodajka/1861641190?l=pl", tiktok: "", instagram: "https://www.instagram.com/paniprowokator/", fandom: "https://sunopedia.fandom.com/pl/wiki/Marika_Dupodajka"},
-    { name: "Lateks Basia", photo: "crackrecordings/basialateks.jpg", spotify: "https://open.spotify.com/artist/62ov6ymKGjHucfYC9qL0HQ", apple: "https://music.apple.com/us/artist/lateks-basia/1895732914", tiktok: "https://www.tiktok.com/@bbasialateks", instagram: "https://www.instagram.com/bbasialateks/", fandom: "https://sunopedia.fandom.com/pl/wiki/Lateks_Basia"},
-    { name: "Daniella Stoipała", photo: "crackrecordings/daniellastoipala.jpg", spotify: "https://open.spotify.com/artist/7b6UxDEyVbGe4qGgWrxYvr", apple: "https://music.apple.com/us/artist/daniella-stoipa%C5%82a/1798094631", tiktok: "https://www.tiktok.com/@daniellastoipala", instagram: "https://www.instagram.com/daniellastoipalaofficial/", fandom: "https://sunopedia.fandom.com/pl/wiki/Daniella_Stoipa%C5%82a"},
-    { name: "Shemrel", photo: "crackrecordings/shemrel.jpg", spotify: "https://open.spotify.com/artist/2prPAB97jnQ5EOJTvIxsWN", apple: "https://music.apple.com/us/artist/shemrel/6778889581", tiktok: "https://www.tiktok.com/@shemrel.official", instagram: "https://www.instagram.com/shemrel.official/", fandom: "https://sunopedia.fandom.com/pl/wiki/Shemrel"},
-    { name: "Erona Queen", photo: "crackrecordings/eronaqueen.jpg", spotify: "https://open.spotify.com/artist/5m1pThFo6IAVA5S73OZbJY", apple: "https://music.apple.com/us/artist/erona-queen/1802740409", tiktok: "https://www.tiktok.com/@eronaqueenofficial", instagram: "https://www.instagram.com/eronaqueenofficial/", fandom: "https://sunopedia.fandom.com/pl/wiki/Erona_Queen"},
-    { name: "Gejowi Geje Gejozy", photo: "crackrecordings/gejowigejegejozy.jpg", spotify: "https://open.spotify.com/artist/0bzizQDZuhvIgKI2d11iCQ", apple: "https://music.apple.com/us/artist/gejowi-geje-gejozy/1801246999", tiktok: "https://www.tiktok.com/@gejowi.geje.gejozy_2.0", instagram: "https://www.instagram.com/gejowi.geje_gejozy", fandom: "https://sunopedia.fandom.com/pl/wiki/Gejowi_Geje_Gejozy"},
-    { name: "Lejdi Luna", photo: "crackrecordings/lejdiluna.jpg", spotify: "https://open.spotify.com/artist/7hMfcbO7h4DFQDdaoBNZOG", apple: "https://music.apple.com/us/artist/lejdi-luna/1895598363", tiktok: "https://www.tiktok.com/@lejdi.luna.official", instagram: "https://www.instagram.com/lejdi.luna/", fandom: ""},
-    { name: "Lil Vexx", photo: "crackrecordings/lilvexx.jpg", spotify: "https://open.spotify.com/artist/33HhRnVsaQQPAlPW75Jiin", apple: "https://music.apple.com/us/artist/lil-vexx/1753364891", tiktok: "", instagram: "https://www.instagram.com/lilvexx.offical/", fandom: "https://sunopedia.fandom.com/pl/wiki/Lil_Vexx"},
-    { name: "Playgirlz", photo: "crackrecordings/att.Au7WazW1nfJ_7I3e7S9C2kuCIiZQhzHpkmGaSb6QG_c.jpg", spotify: "", apple: "", tiktok: "", instagram: "https://www.instagram.com/playgirlz1347", fandom: "https://sunopedia.fandom.com/pl/wiki/Playgirlz"},
-    { name: "Żaneta Pocisk", photo: "crackrecordings/zanetapocisk.jpg", spotify: "https://open.spotify.com/artist/7oj6ux9yBAJIAstjqbDlaT", apple: "https://music.apple.com/pl/artist/%C5%BCaneta-pocisk/1877627376?l=pl", tiktok: "https://www.tiktok.com/@zanetapocisk", instagram: "https://www.instagram.com/pociskzaneta", fandom: "https://sunopedia.fandom.com/pl/wiki/%C5%BBaneta_Pocisk"},
-    { name: "Malwinka Malinka", photo: "crackrecordings/malwinkamalinka.jpg", spotify: "https://open.spotify.com/artist/0W2p7lCGqK64QDAe3PFwRI", apple: "https://music.apple.com/us/artist/malwinka-malinka/6776941406", tiktok: "", instagram: "https://www.instagram.com/malwinka_.malinka", fandom: ""},
-    { name: "Oliwia Mokrawska", photo: "crackrecordings/oliwia mokrawska.jpg", spotify: "", apple: "", tiktok: "", instagram: "https://www.instagram.com/oliwia_.mokrawska", fandom: ""},
+    { name: "GAENOVEFA", photo: "crackrecordings/Geniaoct.jpg", spotify: "https://open.spotify.com/artist/6dNngdYDRKzFH8rfZXG2bh", apple: "https://music.apple.com/pl/artist/gaenovefa/1806346053?l=pl", tiktok: "https://www.tiktok.com/@gaenovefa", instagram: "https://www.instagram.com/americasnextsupermodel/", fandom: "https://sunopedia.fandom.com/pl/wiki/GAENOVEFA", desc: "Gaenovefa (zapis stylizowany wielkimi literami), właściwie Genowefa Aleksandrejova-Bogusz (ur. 26 sierpnia 1997r. w Petersburgu) - polsko-rosyjska piosenkarka, producentka, autorka tekstów, aktywiska LGBTQIA+, oraz performerka. Zadebiutowała 18 października 2024 roku singlem „BAD GIRL” w kolaboracji z Big Mommy Money (obecnie A.P.). Jej muzyka oscyluje między popem, muzyką eksperymentalną, rockiem i breakcorem."},
+    { name: "Marika Dupodajka", photo: "crackrecordings/export_BAD95D0D-8600-4799-A384-423EF9CFCABC.jpg", spotify: "https://open.spotify.com/artist/0y3Hz2TBbj4CSW7PsZB0xh", apple: "https://music.apple.com/pl/artist/marika-dupodajka/1861641190?l=pl", tiktok: "", instagram: "https://www.instagram.com/paniprowokator/", fandom: "https://sunopedia.fandom.com/pl/wiki/Marika_Dupodajka", desc: "Marika Dupodajka, właśc. Milena Derengowska (ur. 4 marca 1996 w Tomaszowie Mazowieckim) - polska piosenkarka, raperka oraz producentka muzyczna. Jest ona jedną z założycielek wytwórni Crack Recordings, oraz jest jedną z założycielek duetu muzyki elektronicznej Playgirlz. "},
+    { name: "Lateks Basia", photo: "crackrecordings/basialateks.jpg", spotify: "https://open.spotify.com/artist/62ov6ymKGjHucfYC9qL0HQ", apple: "https://music.apple.com/us/artist/lateks-basia/1895732914", tiktok: "https://www.tiktok.com/@bbasialateks", instagram: "https://www.instagram.com/bbasialateks/", fandom: "https://sunopedia.fandom.com/pl/wiki/Lateks_Basia", desc: "Lateks Basia, właśc. Basia Sprośna (ur. 24 lipca 2002 r.) - polska piosenkarka, autorka tekstów, kompozytorka i producentka muzyczna. Lateks Basia miała zacząć nagrywać w 2021 roku w wynajmowanej kawalerce na warszawskim Bródnie, używając starego mikrofonu po ojcu i darmowej wersji FL Studio. Pierwsze demówki podobno powstawały nocami, kiedy wracała z pracy w sklepie z odzieżą roboczą — stąd późniejsze fascynacje estetyką „dresu”, „mokrej roboty” i miejskiego chaosu, które przewijają się w tytułach jej utworów."},
+    { name: "Daniella Stoipała", photo: "crackrecordings/daniellastoipala.jpg", spotify: "https://open.spotify.com/artist/7b6UxDEyVbGe4qGgWrxYvr", apple: "https://music.apple.com/us/artist/daniella-stoipa%C5%82a/1798094631", tiktok: "https://www.tiktok.com/@daniellastoipala", instagram: "https://www.instagram.com/daniellastoipalaofficial/", fandom: "https://sunopedia.fandom.com/pl/wiki/Daniella_Stoipa%C5%82a", desc: "Daniella Stoipała' (ur. 21 czerwca 2000 roku w Tampere), właśc. to Daniella Nieminem-Krzak - polsko-fińska piosenkarka, autorka tekstów i tancerka. Rozpoczęła karierę swoim pierwszym singlem pt. “Diva” wydanym 21 stycznia 2025. Już w 2024 artystka zaczęła nagrywać pierwsze utwory, jednak 21 stycznia 2025 oficjalnie wydala swój pierwszy singiel Diva. Dzień później wydała EP Debiut Dziwki #1 składający się z Divy i 5-ciu innych utworów. Jej debiut cieszył się dużą popularnością."},
+    { name: "Shemrel", photo: "crackrecordings/shemrel.jpg", spotify: "https://open.spotify.com/artist/2prPAB97jnQ5EOJTvIxsWN", apple: "https://music.apple.com/us/artist/shemrel/6778889581", tiktok: "https://www.tiktok.com/@shemrel.official", instagram: "https://www.instagram.com/shemrel.official/", fandom: "https://sunopedia.fandom.com/pl/wiki/Shemrel", desc: "Shemrel, właśc. Sabina Katarzyna Shemrel (ur. 6 września 2002 roku w Opolu) — polska piosenkarka, autorka tekstów i modelka, działająca w przestrzeni muzyki internetowej oraz sceny związanej z twórczością AI. Choć jej działalność muzyczna funkcjonuje głównie w niszowym obiegu, zyskała rozpoznawalność w społeczności internetowej dzięki swojej wyrazistej osobowości, aktywności online oraz charakterystycznemu stylowi."},
+    { name: "Erona Queen", photo: "crackrecordings/eronaqueen.jpg", spotify: "https://open.spotify.com/artist/5m1pThFo6IAVA5S73OZbJY", apple: "https://music.apple.com/us/artist/erona-queen/1802740409", tiktok: "https://www.tiktok.com/@eronaqueenofficial", instagram: "https://www.instagram.com/eronaqueenofficial/", fandom: "https://sunopedia.fandom.com/pl/wiki/Erona_Queen", desc: "Erona Queen (ur. 10 marca 2005 r. w Los Angeles) – polsko-amerykańska piosenkarka, artystka, autorka tekstów i producentka muzyki. Erona zadebiutowała 10 marca 2025 roku z singlem „VIP ROOM”. Dziewięć dni później wydała kolejny utwór – tym razem w kolaboracji z Gejowi Geje Gejozy – zatytułowany „Queen of kondomy”. 21 marca premierę miał jej debiutancki album pt. „Czarna Barbie Girl”. 2 kwietnia artystka wydała singiel „Pizza”, a 9 kwietnia wakacyjny hit „Vacation trip”. 25 kwietnia ukazał się singiel „XXX ST4R”."},
+    { name: "Gejowi Geje Gejozy", photo: "crackrecordings/gejowigejegejozy.jpg", spotify: "https://open.spotify.com/artist/0bzizQDZuhvIgKI2d11iCQ", apple: "https://music.apple.com/us/artist/gejowi-geje-gejozy/1801246999", tiktok: "https://www.tiktok.com/@gejowi.geje.gejozy_2.0", instagram: "https://www.instagram.com/gejowi.geje_gejozy", fandom: "https://sunopedia.fandom.com/pl/wiki/Gejowi_Geje_Gejozy", desc: "Gejowi Geje Gejozy (znany również jako GGG) — duet muzyczny, w którego skład wchodzi Lalirona Sahur oraz druga nieznana członkinia. W okolicach maja 2024 zespół powstał, lecz po kilku miesiacach słuch o wokalistce Lalironie oraz o samym zespole zaginął. W okresie przedwakacyjnym w 2025 roku, zespół się reaktywował, gdzie do teraz tworzą muzykę. Duet jest współwłaścicielem polskiej wytwórni Dealdough Records."},
+    { name: "Lejdi Luna", photo: "crackrecordings/lejdiluna.jpg", spotify: "https://open.spotify.com/artist/7hMfcbO7h4DFQDdaoBNZOG", apple: "https://music.apple.com/us/artist/lejdi-luna/1895598363", tiktok: "https://www.tiktok.com/@lejdi.luna.official", instagram: "https://www.instagram.com/lejdi.luna/", fandom: "", desc: "Coming Soon!"},
+    { name: "Lil Vexx", photo: "crackrecordings/lilvexx.jpg", spotify: "https://open.spotify.com/artist/33HhRnVsaQQPAlPW75Jiin", apple: "https://music.apple.com/us/artist/lil-vexx/1753364891", tiktok: "", instagram: "https://www.instagram.com/lilvexx.offical/", fandom: "https://sunopedia.fandom.com/pl/wiki/Lil_Vexx", desc: "Lil Vexx, właśc. Liliana Spermińska (ur. 8 marca 1990 roku w Berlinie) – polska piosenkarka, artystka sceniczna, autorka tekstów, producentka i tancerka. Liliana zadebiutowała na scenie 8 lutego 2025 roku dwoma singlami: „PUSSY POWER” oraz „VAPE 4 CASH”, a 11 lutego wydała kolejny singiel – „PERIOD QUEEN”. Jej debiutancki album „VEXX WORLD” ukazał się 15 lutego 2025 roku. Cała wczesna dyskografia została później ukryta na kanale artystki i pozostaje obecnie niedostępna."},
+    { name: "Playgirlz", photo: "crackrecordings/att.Au7WazW1nfJ_7I3e7S9C2kuCIiZQhzHpkmGaSb6QG_c.jpg", spotify: "", apple: "", tiktok: "", instagram: "https://www.instagram.com/playgirlz1347", fandom: "https://sunopedia.fandom.com/pl/wiki/Playgirlz", desc: "Playgirlz — polski duet muzyki elektronicznej, który tworzy Marika Dupodajka wraz z GAENOVEFĄ. Większy projekt zaczęły tworzyć już w lutym 2026 roku, który miał być albumem kolaboracyjnym o nazwie P0RNST4RZ, lecz ze względu na brak pomysłu szybko odrzuciły ten projekt i postanowiły podzielić nagrane piosenki do swoich archiwów, oraz na swoje późniejsze projekty. Dopiero w drugiej połowie 2026 roku, przeglądając swoje stare zdjęcia, postanowiły założyć duet Playgirlz."},
+    { name: "Żaneta Pocisk", photo: "crackrecordings/zanetapocisk.jpg", spotify: "https://open.spotify.com/artist/7oj6ux9yBAJIAstjqbDlaT", apple: "https://music.apple.com/pl/artist/%C5%BCaneta-pocisk/1877627376?l=pl", tiktok: "https://www.tiktok.com/@zanetapocisk", instagram: "https://www.instagram.com/pociskzaneta", fandom: "https://sunopedia.fandom.com/pl/wiki/%C5%BBaneta_Pocisk", desc: "Żaneta Pocisk (ur. 14 sierpnia 2005 roku w Sosnowcu) - polska artystka AI, piosenkarka, autorka tekstów, producentka muzyczna i wizjonerka. Założycielka niezależnej wytwórni Pocisk Records. Karierę muzyczną rozpoczęła 6 lutego 2026 roku, publikując w serwisach YouTube i SoundCloud singiel 'pocisk balistyczny'. W swojej twórczości łączy pop, hyperpop, electro, dance, trap, techno, EDM."},
+    { name: "Malwinka Malinka", photo: "crackrecordings/malwinkamalinka.jpg", spotify: "https://open.spotify.com/artist/0W2p7lCGqK64QDAe3PFwRI", apple: "https://music.apple.com/us/artist/malwinka-malinka/6776941406", tiktok: "", instagram: "https://www.instagram.com/malwinka_.malinka", fandom: "", desc: "Coming Soon!"},
+    { name: "Oliwia Mokrawska", photo: "crackrecordings/oliwia mokrawska.jpg", spotify: "", apple: "", tiktok: "", instagram: "https://www.instagram.com/oliwia_.mokrawska", fandom: "", desc: "Coming Soon!"},
   ];
 </script>
 
@@ -365,17 +420,46 @@ html,body{height:100%}
   var titles = {home:'CRACK RECORDINGS',artist:'ARTIST — CRACK RECORDINGS',merch:'MERCH — CRACK RECORDINGS',contact:'CONTACT — CRACK RECORDINGS'};
 
   function route() {
-    var name = (location.hash.replace(/^#\/?/, '') || 'home').toLowerCase();
+    var parts = location.hash.replace(/^#\/?/, '').split('/');
+    var name = (parts[0] || 'home').toLowerCase();
     if (!titles[name]) name = 'home';
-    pages.forEach(function (p) { p.hidden = p.getAttribute('data-page') !== name; });
+    var page = name;
+    if (name === 'artist' && parts[1]) {
+      var ok = false;
+      try { ok = !!(window.renderArtist && window.renderArtist(decodeURIComponent(parts[1]))); } catch (e) {}
+      if (ok) page = 'artist-detail';
+    }
+    pages.forEach(function (p) { p.hidden = p.getAttribute('data-page') !== page; });
+    var shown = document.querySelector('[data-page="' + page + '"]');
+    if (shown) shown.scrollTop = 0;
     links.forEach(function (a) {
       if (a.getAttribute('data-nav') === name) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
-    document.title = titles[name];
+    document.title = (page === 'artist-detail' && window.artistTitle) ? window.artistTitle : titles[name];
     document.body.classList.toggle('sub', name !== 'home');   // rozmycie tła + przycisk powrotu
   }
-  window.addEventListener('hashchange', route);
+  // przejście: najpierw obecna strona się rozmywa (260 ms), dopiero potem podmiana na nową,
+  // która sama się wyostrza (animacja w CSS). Podczas przejścia kolejne kliknięcia biorą najnowszy hash.
+  var bgEl = document.querySelector('.bg');
+  var leaveTimer = null;
+  function visiblePage() {
+    for (var i = 0; i < pages.length; i++) if (!pages[i].hidden) return pages[i];
+    return null;
+  }
+  function onHash() {
+    if (leaveTimer) return;
+    var cur = visiblePage();
+    var out = (cur && cur.getAttribute('data-page') === 'home') ? bgEl : cur;
+    if (!out || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { route(); return; }
+    out.classList.add('leaving');
+    leaveTimer = setTimeout(function () {
+      leaveTimer = null;
+      route();
+      out.classList.remove('leaving');
+    }, 260);
+  }
+  window.addEventListener('hashchange', onHash);
   route();
 
   // --- kafelki artystek (dane z ARTISTS na górze pliku) ---
@@ -389,6 +473,54 @@ html,body{height:100%}
       u = String(u || '').trim();
       if (!u) return '';
       return /^https?:\/\//i.test(u) ? u : 'https://' + u.replace(/^\/+/, '');
+    };
+
+    var slugOf = function (a) {
+      return String((a && a.name) || '').toLowerCase().replace(/ł/g, 'l')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    };
+
+    // podstrona artystki: zdjęcie po lewej, po prawej nazwa, opis i linki
+    window.renderArtist = function (slug) {
+      var a = null;
+      for (var i = 0; i < list.length; i++) if (slugOf(list[i]) === slug) { a = list[i]; break; }
+      if (!a) return false;
+      var box = document.getElementById('adetail');
+      box.innerHTML = '';
+
+      var ph = document.createElement('div');
+      ph.className = 'adphoto';
+      ph.setAttribute('role', 'img');
+      ph.setAttribute('aria-label', a.name || 'Artist');
+      if (a.photo && String(a.photo).trim()) ph.style.backgroundImage = 'url("' + encodeURI(String(a.photo).trim()) + '")';
+      box.appendChild(ph);
+
+      var tx = document.createElement('div');
+      tx.className = 'adtext';
+      var h2 = document.createElement('h2');
+      h2.textContent = a.name || '';
+      tx.appendChild(h2);
+      if (a.desc && String(a.desc).trim()) {
+        var d = document.createElement('p');
+        d.textContent = String(a.desc).trim();
+        tx.appendChild(d);
+      }
+      var links = document.createElement('div');
+      links.className = 'adlinks';
+      SOCIALS.forEach(function (s) {
+        var url = fixUrl(a[s[0]]);
+        if (!url) return;
+        var l = document.createElement('a');
+        l.href = url; l.target = '_blank'; l.rel = 'noopener';
+        l.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + ICONS[s[0]] + '"/></svg>';
+        l.appendChild(document.createTextNode(s[1]));
+        links.appendChild(l);
+      });
+      if (links.children.length) tx.appendChild(links);
+      box.appendChild(tx);
+      window.artistTitle = (a.name || 'Artist') + ' — CRACK RECORDINGS';
+      return true;
     };
 
     var box = document.getElementById('artists');
@@ -405,18 +537,27 @@ html,body{height:100%}
         photo.classList.add('has');
         photo.style.backgroundImage = 'url("' + encodeURI(String(a.photo).trim()) + '")';
       }
-      card.appendChild(photo);
+      var pwrap = document.createElement('a');
+      pwrap.className = 'pwrap';
+      pwrap.href = '#/artist/' + slugOf(a);
+      pwrap.setAttribute('aria-label', a.name || 'Artist');
+      pwrap.appendChild(photo);
+      card.appendChild(pwrap);
 
       var info = document.createElement('div');
       info.className = 'info';
       var h = document.createElement('h3');
-      h.textContent = a.name || '';
+      var hl = document.createElement('a');
+      hl.href = '#/artist/' + slugOf(a);
+      hl.textContent = a.name || '';
+      h.appendChild(hl);
       info.appendChild(h);
 
       var row = document.createElement('div');
       row.className = 'soc-row';
       SOCIALS.forEach(function (s) {
         var url = fixUrl(a[s[0]]);
+        if (!url) return;   // brak linku = ikonka w ogóle się nie pokazuje
         var el = document.createElement(url ? 'a' : 'span');
         el.className = 'soc' + (url ? '' : ' off');
         el.setAttribute('aria-label', s[1]);
@@ -429,6 +570,7 @@ html,body{height:100%}
       card.appendChild(info);
       box.appendChild(card);
     });
+    route();
   } catch (e) {}
 
   // klik w tło poza panelem albo Esc wraca na home
@@ -438,7 +580,7 @@ html,body{height:100%}
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       if (!scr.hidden) { closeScreamer(); return; }
-      location.hash = '#/';
+      location.hash = /^#\/artist\//.test(location.hash) ? '#/artist' : '#/';
     }
   });
 
