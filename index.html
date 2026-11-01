@@ -415,7 +415,7 @@ html,body{height:100%}
       <div class="pfoot"><span class="copy-text">© <span class="yr2">2026</span> <a href="#/" class="Crack-scream" aria-label="Crack Recordings">Crack Recordings</a><span class="division">, a division of <a href="https://sliska.pl/smg/" target="_blank" rel="noopener">Śliska Music Group</a>.</span></span><span class="flinks"><a href="#/regulamin">Regulamin</a><span class="sep" aria-hidden="true">/</span><a href="#/prywatnosc">Prywatność</a><span class="sep" aria-hidden="true">/</span><a href="#/cookies">Cookies</a></span></div>
     </section>
 
-    <!-- MERCH: kategorie (Vinyl / CD / Cassettes / Clothing) + siatka produktów.
+    <!-- MERCH: kategorie (Vinyl / CD / Cassettes / Other) + siatka produktów.
          Produkty dodajesz w <script>, w tablicy MERCH_PRODUCTS. -->
     <section class="panel" data-page="merch" hidden>
       <h1>Merch</h1>
@@ -639,7 +639,7 @@ html,body{height:100%}
 
   // =====================================================================
   //  MERCH — PRODUKTY. 1 blok { ... } = 1 produkt. Żeby dodać kolejny: skopiuj cały
-  //  blok (od { do },) i zmień dane. Kategorie: "Vinyl", "CD", "Cassettes", "Clothing".
+  //  blok (od { do },) i zmień dane. Kategorie: "Vinyl", "CD", "Cassettes", "Other".
   //
   //   category   jedna z 4 kategorii powyżej (pisz dokładnie tak)
   //   name       nazwa produktu (z niej powstaje adres #/merch/nazwa-produktu)
@@ -651,7 +651,7 @@ html,body{height:100%}
   //
   //  Pilnuj przecinka na końcu każdego bloku i prostych cudzysłowów " ".
   // =====================================================================
-  var MERCH_CATEGORIES = ["Vinyl", "CD", "Cassettes", "Clothing"];
+  var MERCH_CATEGORIES = ["Vinyl", "CD", "Cassettes", "Other"];
 
   var MERCH_PRODUCTS = [
       {
@@ -672,12 +672,30 @@ html,body{height:100%}
       inStock: false,
       buyUrl: ""
     },
-        {
+    {
       category: "Vinyl",
       name: "sensitive issue by Marika Dupodajka — limited 1LP",
       price: "199 PLN",
       photo: "sensitive issue vinyl.png",
       desc: "Mixtape sensitive issue od Mariki Dupodajki na limitowanym metalowo-różowym winylu.\n\nLista utworów:\n\nSide A:\n1. kieliszek\n2. julia von stein\n3. boli?\n4. ameba pierdolona\n\nSide B:\n\n5. kuciapięta\n6.punk doesnt exist\n7. electro ruchadło\n\nWysyłka: TBA ",
+      inStock: false,
+      buyUrl: ""
+    },
+    {
+      category: "Vinyl",
+      name: "AMERICA'S NEXT SUPERMODEL (deluxe) — limited 2LP",
+      price: "300 PLN",
+      photo: "ansvinyl.png",
+      desc: "Piąty album AMERICA'S NEXT SUPERMODEL od GAENOVEFY na limitowanym winylu.\n\nLista utworów:\n\nSide A:\n\n1. Liposukcja\n2. Tracksuit\n3. Menstruacja (ft. Lucyna Kredka)\n4. Detoks (okradłam monopolowy) (ft. loretta szmatożerna)\n\nSide B:\n\n5. Wypadek (interlude)\n6. Petersburg 97.08 - Album Mix\n7.Crackhead (ft. Lucyna Kredka)\n8. Lipgloss\n\nSide C:\n\n9. Kurwier\n10. Gaynovefa II\nKwas\n\nSide D:\n\n12. Swingerka\n13.Future Milf\n14. America's Next Supermodel\n15. LAX\n\nWysyłka: TBA ",
+      inStock: false,
+      buyUrl: ""
+    },
+      {
+      category: "Other",
+      name: "DILDO XXXL GAENOVEFA AMERICA’S NEXT SUPERMODEL GUMOWE JEBADŁO SUPER DOZNANIA STYMULACYJNE NASIENIE GRATIS",
+      price: "45 PLN",
+      photo: "ansdildo.png",
+      desc: "Ogromne dildo z grafiką piątego albumu GAENOVEFY uwolni nieznane dotychczas doznania sekualne, wraz z wbudowanym wibratorem twoja cipka - czy to męska, czy to damska - otworzy trzecie oko. Prącie jest odlewem męża GAENOVEFY - Dave’a Williams.\n\nWysyłka: TBA ",
       inStock: false,
       buyUrl: ""
     },
@@ -970,7 +988,7 @@ html,body{height:100%}
 
   // --- Merch: kategorie, kafelki produktów i podstrona produktu (dane z MERCH_PRODUCTS) ---
   try {
-    var MCATS = (typeof MERCH_CATEGORIES !== 'undefined' && Array.isArray(MERCH_CATEGORIES)) ? MERCH_CATEGORIES : ['Vinyl', 'CD', 'Cassettes', 'Clothing'];
+    var MCATS = (typeof MERCH_CATEGORIES !== 'undefined' && Array.isArray(MERCH_CATEGORIES)) ? MERCH_CATEGORIES : ['Vinyl', 'CD', 'Cassettes', 'Other'];
     var MPROD = (typeof MERCH_PRODUCTS !== 'undefined' && Array.isArray(MERCH_PRODUCTS)) ? MERCH_PRODUCTS : [];
     var mSlug = function (p) {
       return String((p && p.name) || '').toLowerCase().replace(/ł/g, 'l')
